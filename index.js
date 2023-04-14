@@ -9,6 +9,10 @@ app.get("/scrape", (req, res) => {
   scrapeTradingViewScreenshot(req, res, req.query.symbol ?? 'BTCUSDT', req.query.interval ?? '15', req.query.chart ?? '8ZXloR52');
 });
 
+app.get("/scrape2", (req, res) => {
+  scrapeLogic(res);
+});
+
 app.get("/", (req, res) => {
   res.send("Render Puppeteer server is up and running!");
 });
