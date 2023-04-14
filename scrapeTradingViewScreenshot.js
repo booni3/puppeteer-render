@@ -24,7 +24,7 @@ const setupScreenshotsFolder = async () => {
   })
 }
 
-const scrapeTradingViewScreenshot = async (req, res, symbol = 'BTCUSDT', interval = '15', chart = '8ZXloR52') => {
+const scrapeTradingViewScreenshot = async (req, res, symbol, interval, chart) => {
   // Empty folder
   await setupScreenshotsFolder();
 
@@ -45,7 +45,7 @@ const scrapeTradingViewScreenshot = async (req, res, symbol = 'BTCUSDT', interva
   });
 
   try {
-    console.log('Get page')
+    console.log('Getting page')
     const page = await browser.newPage();
     await page.setCookie(
       {
@@ -67,7 +67,7 @@ const scrapeTradingViewScreenshot = async (req, res, symbol = 'BTCUSDT', interva
 
     await page.goto(
       `https://www.tradingview.com/chart/${chart}?symbol=${symbol}&interval=${interval}`,
-      {waitUntil: 'networkidle2'}
+      {waitUntil: 'networkidle2', timeout: 60000}
     );
 
     // Setup Page & Screenshot
@@ -94,11 +94,11 @@ const scrapeTradingViewScreenshot = async (req, res, symbol = 'BTCUSDT', interva
       behavior: 'allow',
       downloadPath: './screenshots',
     })
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise(r => setTimeout(r, 5000));
     await page.keyboard.down('Alt');
     await page.keyboard.down('Meta');
     await page.keyboard.press('S');
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise(r => setTimeout(r, 5000));
 
     // Send filenames as JSON array
     // let fileNames= JSON.stringify(fs.readdirSync(directory).map((file) => path.join(directory, file)));
@@ -106,7 +106,9 @@ const scrapeTradingViewScreenshot = async (req, res, symbol = 'BTCUSDT', interva
 
     // Send file
     console.log('Sending file')
-    let file = path.join(directory, fs.readdirSync(directory).find(x=>x!==undefined));
+    let files = fs.readdirSync(directory);
+    console.log('Files: '+JSON.stringify(files));
+    let file = path.join(directory, files.find(x=>x!==undefined));
     res.sendfile(file)
 
   } catch (e) {
