@@ -7,10 +7,12 @@ require("dotenv").config();
 const setupScreenshotsFolder = async () => {
   // Create screenshots if not exists
   if (!fs.existsSync(directory)){
+    console.log('Creating screenshots directory')
     fs.mkdirSync(directory);
   }
 
   // Empty Screenshots Folder
+  console.log('Emptying the screenshots directory')
   fs.readdir(directory, (err, files) => {
     if (err) throw err;
 
@@ -27,6 +29,7 @@ const scrapeTradingViewScreenshot = async (req, res, symbol = 'BTCUSDT', interva
   await setupScreenshotsFolder();
 
   // Setup Browser
+  console.log('Setting up browser')
   const browser = await puppeteer.launch({
     'headless': true,
     args: [
@@ -42,6 +45,7 @@ const scrapeTradingViewScreenshot = async (req, res, symbol = 'BTCUSDT', interva
   });
 
   try {
+    console.log('Get page')
     const page = await browser.newPage();
     await page.setCookie(
       {
@@ -67,6 +71,7 @@ const scrapeTradingViewScreenshot = async (req, res, symbol = 'BTCUSDT', interva
     );
 
     // Setup Page & Screenshot
+    console.log('Setting up viewport')
     await page.addStyleTag({'content': '.tv-floating-toolbar{ display: none; }', 'path': '', 'url': ''});
     await page.setViewport({width: 1280, height: 720, deviceScaleFactor: 2});
     // await page.screenshot({
@@ -83,6 +88,7 @@ const scrapeTradingViewScreenshot = async (req, res, symbol = 'BTCUSDT', interva
      */
 
     // Download Screenshot
+    console.log('Downloading screenshot')
     const client = await page.target().createCDPSession()
     await client.send('Page.setDownloadBehavior', {
       behavior: 'allow',
@@ -99,6 +105,7 @@ const scrapeTradingViewScreenshot = async (req, res, symbol = 'BTCUSDT', interva
     // res.send(fileNames)
 
     // Send file
+    console.log('Sending file')
     let file = path.join(directory, fs.readdirSync(directory).find(x=>x!==undefined));
     res.sendfile(file)
 
