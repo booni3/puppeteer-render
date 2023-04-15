@@ -73,7 +73,8 @@ const scrapeTradingViewScreenshot = async (req, res, symbol, interval, chart) =>
     // Setup Page & Screenshot
     console.log('Setting up viewport')
     await page.addStyleTag({'content': '.tv-floating-toolbar{ display: none; }', 'path': '', 'url': ''});
-    await page.setViewport({width: 1280, height: 720, deviceScaleFactor: 2});
+    // await page.setViewport({width: 1280, height: 720, deviceScaleFactor: 2});
+    await page.setViewport({width: 1280, height: 720});
     await page.keyboard.down('ShiftLeft'); // Shift+F for fullscreen
     await page.keyboard.press('F');
     console.log('Taking Screenshot')
